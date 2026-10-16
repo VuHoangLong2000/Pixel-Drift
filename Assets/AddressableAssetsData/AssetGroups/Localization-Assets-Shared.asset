@@ -14,8 +14,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: Unity.Addressables.Editor::UnityEditor.AddressableAssets.Settings.AddressableAssetGroup
   m_GroupName: Localization-Assets-Shared
   m_GUID: 7ead9cb9e5e93d344836cd84ac3050ba
-  m_SerializeEntries: []
+  m_SerializeEntries:
+  - m_GUID: ba28caec4c560694cba77ce168661a02
+    m_Address: Assets/Localization/Localization Tables/PixelDrift Shared Data.asset
+    m_ReadOnly: 1
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 1
   m_Settings: {fileID: 11400000, guid: b0e829b4627cb3640bf5a368294fd9db, type: 2}
   m_SchemaSet:
-    m_Schemas: []
+    m_Schemas:
+    - {fileID: 11400000, guid: df088a43e6177ed47bfde0c702ce22cf, type: 2}
+    - {fileID: 11400000, guid: 350206f5b588c814cb25601656beaf66, type: 2}
+    - {fileID: 11400000, guid: fa48f2827f97f3c458b099e5f57ce63f, type: 2}

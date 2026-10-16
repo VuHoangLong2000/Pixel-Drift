@@ -14,8 +14,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: Unity.Addressables.Editor::UnityEditor.AddressableAssets.Settings.AddressableAssetGroup
   m_GroupName: Localization-String-Tables-Vietnamese (Vietnam) (vi-VN)
   m_GUID: 3773f6596ff18d44385698921734fbbb
-  m_SerializeEntries: []
+  m_SerializeEntries:
+  - m_GUID: 434a57b2b396e3242a7e2b8278a1f7f8
+    m_Address: PixelDrift_vi-VN
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-vi-VN
+    FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 1
   m_Settings: {fileID: 11400000, guid: b0e829b4627cb3640bf5a368294fd9db, type: 2}
   m_SchemaSet:
-    m_Schemas: []
+    m_Schemas:
+    - {fileID: 11400000, guid: 6a12691a080bb8f45b4337d271e70c9f, type: 2}
+    - {fileID: 11400000, guid: 3d891c9015686c042b42d017da653a00, type: 2}
+    - {fileID: 11400000, guid: 895767fb11fb22641aaf94d918845b02, type: 2}
