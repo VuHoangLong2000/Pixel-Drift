@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using UnityEngine;
 
 public enum Language
@@ -22,7 +23,7 @@ public class LocalizeManager : MonoBehaviour
 
     private void Awake()
     {
-        if (Instance != null)
+        if (Instance != null && Instance != this)
         {
             Destroy(gameObject);
             return;
@@ -34,9 +35,6 @@ public class LocalizeManager : MonoBehaviour
         LoadLanguage();
     }
 
-    /// <summary>
-    /// Google Sheet gọi hàm này sau khi pull data xong
-    /// </summary>
     public void Initialize(Language language, Dictionary<string, string> table)
     {
         if (table == null)
@@ -44,67 +42,81 @@ public class LocalizeManager : MonoBehaviour
 
         _tables[language] = table;
 
-        if(CurrentLanguage == language)
-            this._table = table;
+        if (CurrentLanguage == language)
+            _table = table;
     }
 
-
-    /// <summary>
-    /// Lấy text theo key
-    /// </summary>
-    /// //Nơi khác gọi LocalizeManager.Instance.GetLocalize("đưa key vào"); là hoạt động
+    // Lấy bản dịch chưa có tham số.
     public string GetLocalize(string key)
     {
         if (string.IsNullOrEmpty(key))
             return string.Empty;
 
-        if (_table.TryGetValue(key, out var value)) 
+        if (_table.TryGetValue(key, out string value))
             return value;
 
-        if (_tables.TryGetValue(DefaultLanguage, out var fallbackTable))
+        if (_tables.TryGetValue(DefaultLanguage, out var fallbackTable) &&
+            fallbackTable.TryGetValue(key, out value))
         {
-            if (fallbackTable.TryGetValue(key, out value))
-            {
-                return value;
-            }
+            return value;
         }
 
         Debug.LogWarning($"[Localize] Missing key: {key}");
         return key;
     }
 
-    /// <summary>
-    /// Đổi ngôn ngữ
-    /// </summary>
+    // Lấy bản dịch có tham số, ví dụ: "Thu thập {0} vật phẩm".
+    public string GetLocalize(string key, params object[] args)
+    {
+        string localizedText = GetLocalize(key);
+
+        if (args == null || args.Length == 0)
+            return localizedText;
+
+        try
+        {
+            return string.Format(CultureInfo.InvariantCulture, localizedText, args);
+        }
+        catch (FormatException e)
+        {
+            Debug.LogError($"[Localize] Invalid format for key '{key}': {e.Message}");
+
+            return localizedText;
+        }
+    }
+
     public void ChangeLanguage(Language language)
     {
         if (CurrentLanguage == language)
             return;
 
-        if (!_tables.ContainsKey(language))
+        if (!_tables.TryGetValue(language, out var table))
+        {
+            Debug.LogWarning($"[Localize] Language table not initialized: {language}");
             return;
+        }
 
         CurrentLanguage = language;
-
-        _table = _tables[language];
+        _table = table;
 
         PlayerPrefs.SetInt("Language", (int)language);
         PlayerPrefs.Save();
 
         OnLanguageChanged?.Invoke();
     }
-    /// <summary>
-    /// Check key tồn tại
-    /// </summary>
+
     public bool HasKey(string key)
     {
         return _table.ContainsKey(key);
     }
-    /// <summary>
-    /// Load language đã lưu
-    /// </summary>
+
     private void LoadLanguage()
     {
-        CurrentLanguage = (Language)PlayerPrefs.GetInt("Language", (int)Language.Vietnamese);
+        int savedLanguage = PlayerPrefs.GetInt("Language", (int)Language.Vietnamese);
+
+        if (Enum.IsDefined(typeof(Language), savedLanguage))
+            CurrentLanguage = (Language)savedLanguage;
+        else
+            CurrentLanguage = DefaultLanguage;
     }
 }
