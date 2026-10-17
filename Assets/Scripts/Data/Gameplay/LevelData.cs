@@ -17,12 +17,12 @@ public class PixelBlockData
 [CreateAssetMenu(fileName = "LevelData", menuName = "Pixel Drift/Level Data")]
 public class LevelData : ScriptableObject
 {
-    [Min(1)]
-    public int width = 50;
-
-    [Min(1)]
-    public int height = 50;
+    [Min(1)] public int width = 50;
+    [Min(1)] public int height = 50;
 
     public List<PixelBlockData> blocks = new List<PixelBlockData>();
+
+    [Header("Shooter Spawn")]
+    public List<ShooterSpawnData> shooters = new List<ShooterSpawnData>();
 }
  

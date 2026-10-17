@@ -4,45 +4,87 @@ using UnityEngine;
 
 public class LevelEditor : EditorWindow
 {
-    private const int DefaultGridWidth = 50;
-    private const int DefaultGridHeight = 50;
+    // -------------------- GRID CONFIG --------------------
+
+    private const int DefaultGridWidth = 12;
+    private const int DefaultGridHeight = 16;
+    private const int MaxGridDimension = 100;
+
     private const float MinCellButtonSize = 12f;
     private const float MaxCellButtonSize = 40f;
-    private float cellButtonSize = 22f;
+    private const float DefaultCellButtonSize = 22f;
 
-    private float gridContentWidth;
+    // -------------------- BOARD FIT CONFIG --------------------
+
+    private const float ReferenceScreenWidth = 1080f;
+    private const float BoardWidthRatio = 0.90f;
+    private const float BoardHeightRatio = 0.52f;
+    private const float MinRuntimeCellPixels = 24f;
+
+    private static readonly string[] AspectNames =
+    {
+        "9:16",
+        "9:19.5",
+        "9:20"
+    };
+
+    private static readonly float[] ReferenceScreenHeights =
+    {
+        1920f,
+        2340f,
+        2400f
+    };
+
+    // -------------------- LEVEL DATA --------------------
 
     private LevelData levelData;
     private LevelData previousLevelData;
 
     private ColorPalette colorPalette;
-    private bool isIndestructible;
+    private ColorPalette previousColorPalette;
 
+    // -------------------- PAINT SETTINGS --------------------
+
+    private bool isIndestructible;
     private int selectedColor;
     private int hitPoints = 1;
-    private int paintControlId;
 
     private bool placeIndestructiblePrefab;
     private int selectedPrefabIndex;
 
-    private bool isMousePainting;
-    private bool isMouseErasing;
-    private Vector2Int lastPaintedPosition = new Vector2Int(-1, -1);
-
+    private int paintControlId;
     private int paintUndoGroup;
 
-    private bool showScenePreview = true;
-    private bool showGrid = true;
+    private bool isMousePainting;
+    private bool isMouseErasing;
 
-    [SerializeField] private float cellSpacing = 1.1f;
-    [SerializeField] private float blockSize = 1f;
-    [SerializeField] private float blockHeight = 1f;
-    [SerializeField] private Vector3 previewOrigin = Vector3.zero;
+    private Vector2Int lastPaintedPosition = new Vector2Int(-1, -1);
+
+    // -------------------- GRID UI --------------------
+
+    private float cellButtonSize = DefaultCellButtonSize;
 
     private Vector2 gridScroll;
     private Vector2 windowScroll;
 
-    private Dictionary<Vector2Int, PixelBlockData> blockLookup = new Dictionary<Vector2Int, PixelBlockData>();
+    private readonly Dictionary<Vector2Int, PixelBlockData> blockLookup = new Dictionary<Vector2Int, PixelBlockData>();
+
+    // -------------------- SCENE PREVIEW --------------------
+
+    private bool showScenePreview = true;
+    private bool showGrid = true;
+
+    private float cellSpacing = 1.1f;
+    private float blockSize = 1f;
+    private float blockHeight = 1f;
+
+    private Vector3 previewOrigin = Vector3.zero;
+
+    // -------------------- SCREEN PREVIEW --------------------
+
+    private int selectedAspectIndex = 1;
+
+    // -------------------- MENU --------------------
 
     [MenuItem("Tools/Pixel Flow/Level Editor")]
     private static void OpenWindow()
@@ -50,9 +92,13 @@ public class LevelEditor : EditorWindow
         GetWindow<LevelEditor>("Pixel Flow Editor");
     }
 
+    // -------------------- LIFECYCLE --------------------
+
     private void OnEnable()
     {
+        SceneView.duringSceneGui -= DrawScenePreview;
         SceneView.duringSceneGui += DrawScenePreview;
+
         RebuildLookup();
     }
 
@@ -62,55 +108,72 @@ public class LevelEditor : EditorWindow
         SceneView.RepaintAll();
     }
 
+    // -------------------- MAIN GUI --------------------
 
     private void OnGUI()
     {
-        Event e = Event.current;
+        HandleMouseRelease();
 
-        // Kết thúc thao tác vẽ/xóa khi thả chuột.
-        if (e.type == EventType.MouseUp && (isMousePainting || isMouseErasing))
-        {
-            Undo.CollapseUndoOperations(paintUndoGroup);
-
-            isMousePainting = false;
-            isMouseErasing = false;
-            lastPaintedPosition = new Vector2Int(-1, -1);
-
-            if (GUIUtility.hotControl == paintControlId)
-            {
-                GUIUtility.hotControl = 0;
-            }
-
-            e.Use();
-        }
-
-        // Scroll tổng cho toàn bộ cửa sổ.
         windowScroll = EditorGUILayout.BeginScrollView(windowScroll);
 
-        EditorGUILayout.LabelField("Level Editor", EditorStyles.boldLabel);
+        EditorGUILayout.LabelField("Pixel Flow - Level Editor", EditorStyles.boldLabel);
+
         EditorGUILayout.Space(5);
 
-        levelData = (LevelData)EditorGUILayout.ObjectField("Level Data", levelData, typeof(LevelData), false);
+        DrawAssetSettings();
+        DrawLevelButtons();
 
-        if (levelData != previousLevelData)
+        if (levelData == null)
         {
-            previousLevelData = levelData;
-            RebuildLookup();
-            SceneView.RepaintAll();
+            EditorGUILayout.HelpBox("Tạo Level Data mới hoặc gán một LevelData asset.", MessageType.Info);
+
+            EditorGUILayout.EndScrollView();
+            return;
         }
 
-        ColorPalette previousPalette = colorPalette;
+        EnsureLevelData();
 
-        colorPalette = (ColorPalette)EditorGUILayout.ObjectField("Color Palette", colorPalette, typeof(ColorPalette), false);
+        DrawBoardSettings();
+        DrawBoardFitValidation();
+        DrawTools();
+        DrawGrid();
+        DrawPalette();
+        DrawPrefabPalette();
+        DrawPreviewSettings();
 
-        if (colorPalette != previousPalette)
+        EditorGUILayout.EndScrollView();
+    }
+
+    private void DrawAssetSettings()
+    {
+        LevelData selectedLevel = (LevelData)EditorGUILayout.ObjectField("Level Data", levelData, typeof(LevelData), false);
+
+        if (selectedLevel != levelData)
         {
-            selectedColor = 0;
+            levelData = selectedLevel;
+            previousLevelData = selectedLevel;
+
+            RebuildLookup();
+
             Repaint();
             SceneView.RepaintAll();
         }
 
+        ColorPalette selectedPalette = (ColorPalette)EditorGUILayout.ObjectField("Color Palette", colorPalette, typeof(ColorPalette), false);
 
+        if (selectedPalette != colorPalette)
+        {
+            colorPalette = selectedPalette;
+            previousColorPalette = selectedPalette;
+            selectedColor = 0;
+
+            Repaint();
+            SceneView.RepaintAll();
+        }
+    }
+
+    private void DrawLevelButtons()
+    {
         EditorGUILayout.BeginHorizontal();
 
         if (GUILayout.Button("New Level", GUILayout.Height(30)))
@@ -125,150 +188,360 @@ public class LevelEditor : EditorWindow
                 SaveLevel();
             }
 
-            GUI.backgroundColor = new Color(1f, 0.55f, 0.55f);
+            Color previousBackground = GUI.backgroundColor;
+            GUI.backgroundColor = new Color(1f, 0.65f, 0.65f);
 
             if (GUILayout.Button("Clear Grid", GUILayout.Height(30)))
             {
                 ClearLevel();
             }
 
-            GUI.backgroundColor = Color.white;
+            GUI.backgroundColor = previousBackground;
         }
 
         EditorGUILayout.EndHorizontal();
-
-
         EditorGUILayout.Space(8);
-
-        if (levelData == null)
-        {
-            EditorGUILayout.HelpBox("Create a new LevelData asset or assign an existing one.", MessageType.Info);
-
-            EditorGUILayout.EndScrollView();
-            return;
-        }
-
-        DrawTools();
-        DrawGrid();
-        DrawPalette();
-        DrawPrefabPalette();
-        DrawPreviewSettings();
-
-        // Đóng scroll tổng.
-        EditorGUILayout.EndScrollView();
     }
 
-
-    private void DrawPreviewSettings()
+    private void EnsureLevelData()
     {
-        EditorGUILayout.LabelField("3D Scene Preview", EditorStyles.boldLabel);
-
-        showScenePreview = EditorGUILayout.Toggle("Show Preview", showScenePreview);
-
-        using (new EditorGUI.DisabledScope(!showScenePreview))
+        if (levelData.blocks == null)
         {
-            showGrid = EditorGUILayout.Toggle("Show Grid", showGrid);
+            Undo.RecordObject(levelData, "Initialize Level Blocks");
+            levelData.blocks = new List<PixelBlockData>();
+            EditorUtility.SetDirty(levelData);
+        }
 
-            cellSpacing = Mathf.Max(0.1f, EditorGUILayout.FloatField("Cell Spacing", cellSpacing));
+        levelData.width = Mathf.Clamp(levelData.width, 1, MaxGridDimension);
+        levelData.height = Mathf.Clamp(levelData.height, 1, MaxGridDimension);
+    }
 
-            blockSize = Mathf.Clamp(EditorGUILayout.FloatField("Block Size", blockSize), 0.01f, cellSpacing);
+    // -------------------- BOARD SETTINGS --------------------
 
-            blockHeight = Mathf.Max(0.01f, EditorGUILayout.FloatField("Block Height", blockHeight));
+    private void DrawBoardSettings()
+    {
+        EditorGUILayout.LabelField("Board Settings", EditorStyles.boldLabel);
 
-            previewOrigin = EditorGUILayout.Vector3Field("Preview Origin", previewOrigin);
+        EditorGUILayout.BeginHorizontal();
 
-            if (GUILayout.Button("Frame Preview"))
+        int newWidth = EditorGUILayout.IntField("Width", levelData.width);
+
+        int newHeight = EditorGUILayout.IntField("Height", levelData.height);
+
+        EditorGUILayout.EndHorizontal();
+
+        newWidth = Mathf.Clamp(newWidth, 1, MaxGridDimension);
+        newHeight = Mathf.Clamp(newHeight, 1, MaxGridDimension);
+
+        if (newWidth != levelData.width ||
+            newHeight != levelData.height)
+        {
+            Undo.RecordObject(levelData, "Resize Level Grid");
+
+            levelData.width = newWidth;
+            levelData.height = newHeight;
+
+            EditorUtility.SetDirty(levelData);
+
+            RebuildLookup();
+            Repaint();
+            SceneView.RepaintAll();
+        }
+
+        int outOfBoundsCount = CountOutOfBoundsBlocks();
+
+        EditorGUILayout.LabelField($"Dimensions: {levelData.width} x {levelData.height}", EditorStyles.miniBoldLabel);
+
+        if (outOfBoundsCount > 0)
+        {
+            EditorGUILayout.HelpBox(
+                $"{outOfBoundsCount} block nằm ngoài biên board. " +
+                "Các block này chưa bị xóa.",
+                MessageType.Warning
+            );
+
+            if (GUILayout.Button("Select Out-of-Bounds Blocks"))
             {
-                FramePreview();
+                Debug.Log("Các block ngoài biên vẫn được giữ nguyên trong LevelData.");
+            }
+
+            if (GUILayout.Button("Remove Out-of-Bounds Blocks"))
+            {
+                RemoveOutOfBoundsBlocks();
             }
         }
 
+        EditorGUILayout.Space(6);
+    }
+
+    private int CountOutOfBoundsBlocks()
+    {
+        if (levelData == null || levelData.blocks == null)
+            return 0;
+
+        int count = 0;
+
+        foreach (PixelBlockData block in levelData.blocks)
+        {
+            if (block == null || !IsInsideGrid(block.position))
+                count++;
+        }
+
+        return count;
+    }
+
+    private bool IsInsideGrid(Vector2Int position)
+    {
+        return position.x >= 0 &&
+               position.x < levelData.width &&
+               position.y >= 0 &&
+               position.y < levelData.height;
+    }
+
+    private void RemoveOutOfBoundsBlocks()
+    {
+        if (levelData == null || levelData.blocks == null)
+            return;
+
+        bool confirm = EditorUtility.DisplayDialog(
+            "Remove Out-of-Bounds Blocks",
+            "Xóa các block nằm ngoài Width/Height hiện tại?",
+            "Xóa",
+            "Hủy"
+        );
+
+        if (!confirm)
+            return;
+
+        Undo.RecordObject(levelData, "Remove Out-of-Bounds Blocks");
+
+        levelData.blocks.RemoveAll(block => block == null || !IsInsideGrid(block.position));
+
+        RebuildLookup();
+
+        EditorUtility.SetDirty(levelData);
+        Repaint();
         SceneView.RepaintAll();
+    }
+
+    // -------------------- BOARD FIT VALIDATION --------------------
+
+    private void DrawBoardFitValidation()
+    {
+        EditorGUILayout.LabelField("Board Fit Validation", EditorStyles.boldLabel);
+
+        selectedAspectIndex = EditorGUILayout.Popup(
+            "Preview Aspect Ratio",
+            selectedAspectIndex,
+            AspectNames
+        );
+
+        bool fitsAllScreens = true;
+
+        for (int i = 0; i < ReferenceScreenHeights.Length; i++)
+        {
+            float cellPixels = CalculateCellPixels(
+                levelData.width,
+                levelData.height,
+                ReferenceScreenWidth,
+                ReferenceScreenHeights[i]
+            );
+
+            bool fits = cellPixels >= MinRuntimeCellPixels;
+
+            if (!fits)
+                fitsAllScreens = false;
+
+            EditorGUILayout.BeginHorizontal();
+
+            EditorGUILayout.LabelField(AspectNames[i], GUILayout.Width(70));
+
+            EditorGUILayout.LabelField($"{cellPixels:F1} px", GUILayout.Width(65));
+
+            EditorGUILayout.LabelField(fits ? "Đạt" : "Quá nhỏ", fits ? EditorStyles.miniLabel : EditorStyles.boldLabel);
+
+            EditorGUILayout.EndHorizontal();
+        }
+
+        if (fitsAllScreens)
+        {
+            EditorGUILayout.HelpBox(
+                "Board đạt ngưỡng kích thước ô tối thiểu " +
+                "trên các cấu hình đang kiểm tra.",
+                MessageType.Info
+            );
+        }
+        else
+        {
+            EditorGUILayout.HelpBox(
+                "Board quá lớn để giữ kích thước ô tối thiểu. " +
+                "Hãy giảm Width hoặc Height. Dữ liệu block " +
+                "không bị tự động xóa.",
+                MessageType.Warning
+            );
+        }
+
+        DrawScreenPreview();
+
         EditorGUILayout.Space(8);
     }
 
+    private float CalculateCellPixels(int width, int height, float screenWidth, float screenHeight)
+    {
+        float availableWidth = screenWidth * BoardWidthRatio;
+        float availableHeight = screenHeight * BoardHeightRatio;
+
+        float cellWidth = availableWidth / Mathf.Max(1, width);
+        float cellHeight = availableHeight / Mathf.Max(1, height);
+
+        return Mathf.Min(cellWidth, cellHeight);
+    }
+
+    private void DrawScreenPreview()
+    {
+        EditorGUILayout.LabelField(
+            "Screen Layout Preview",
+            EditorStyles.miniBoldLabel
+        );
+
+        float screenHeightRatio = ReferenceScreenHeights[selectedAspectIndex] / ReferenceScreenWidth;
+
+        float previewHeight = 190f;
+        float previewWidth = previewHeight / screenHeightRatio;
+
+        Rect area = GUILayoutUtility.GetRect(
+            200f,
+            215f,
+            GUILayout.ExpandWidth(true)
+        );
+
+        Rect screenRect = new Rect(
+            area.center.x - previewWidth * 0.5f,
+            area.y + 5f,
+            previewWidth,
+            previewHeight
+        );
+
+        EditorGUI.DrawRect(
+            screenRect,
+            new Color(0.12f, 0.12f, 0.12f)
+        );
+
+        // Vùng gameplay dành cho board.
+        float boardWidth = screenRect.width * BoardWidthRatio;
+        float boardHeight = screenRect.height * BoardHeightRatio;
+
+        Rect boardRect = new Rect(
+            screenRect.center.x - boardWidth * 0.5f,
+            screenRect.center.y - boardHeight * 0.5f,
+            boardWidth,
+            boardHeight
+        );
+
+        EditorGUI.DrawRect(
+            boardRect,
+            new Color(0.20f, 0.38f, 0.24f)
+        );
+
+        Color borderColor = new Color(0.35f, 0.9f, 0.45f);
+
+        EditorGUI.DrawRect(
+            new Rect(boardRect.x, boardRect.y, boardRect.width, 1f),
+            borderColor
+        );
+
+        EditorGUI.DrawRect(
+            new Rect(boardRect.x, boardRect.yMax - 1f, boardRect.width, 1f),
+            borderColor
+        );
+
+        EditorGUI.DrawRect(
+            new Rect(boardRect.x, boardRect.y, 1f, boardRect.height),
+            borderColor
+        );
+
+        EditorGUI.DrawRect(
+            new Rect(boardRect.xMax - 1f, boardRect.y, 1f, boardRect.height),
+            borderColor
+        );
+
+        GUI.Label(
+            new Rect(
+                screenRect.x - 15f,
+                screenRect.yMax + 2f,
+                screenRect.width + 30f,
+                18f
+            ),
+            AspectNames[selectedAspectIndex],
+            EditorStyles.centeredGreyMiniLabel
+        );
+    }
+
+    // -------------------- TOOLS --------------------
 
     private void DrawTools()
     {
         EditorGUILayout.LabelField("Tools", EditorStyles.boldLabel);
 
-        hitPoints = Mathf.Max(1, EditorGUILayout.IntField("New Block HP", hitPoints));
+        hitPoints = Mathf.Max(
+            1,
+            EditorGUILayout.IntField("New Block HP", hitPoints)
+        );
 
-        isIndestructible = EditorGUILayout.Toggle("New Block Indestructible", isIndestructible);
+        isIndestructible = EditorGUILayout.Toggle(
+            "New Block Indestructible",
+            isIndestructible
+        );
 
         if (isIndestructible)
         {
-            EditorGUILayout.HelpBox("Block màu được đặt mới sẽ không thể bị phá trong gameplay.", MessageType.Info);
+            EditorGUILayout.HelpBox(
+                "Block màu mới đặt sẽ không thể bị phá trong gameplay.",
+                MessageType.Info
+            );
         }
 
-        int blockCount = levelData.blocks != null ? levelData.blocks.Count : 0;
+        int blockCount = levelData.blocks != null
+            ? levelData.blocks.Count
+            : 0;
 
-        EditorGUILayout.LabelField($"Blocks: {blockCount}", EditorStyles.miniBoldLabel);
+        EditorGUILayout.LabelField(
+            $"Blocks: {blockCount}",
+            EditorStyles.miniBoldLabel
+        );
 
         EditorGUILayout.HelpBox(
             "Chuột trái: đặt block và kéo để vẽ.\n" +
-            "Chuột phải: xóa block và kéo để xóa nhiều ô.",
+            "Chuột phải: xóa block và kéo để xóa.",
             MessageType.Info
         );
-
-        EditorGUILayout.Space(5);
     }
 
-
-
-    private void DrawPalette()
-    {
-        EditorGUILayout.LabelField("Color Palette", EditorStyles.boldLabel);
-
-        if (colorPalette == null || colorPalette.entries == null)
-        {
-            EditorGUILayout.HelpBox("Hãy tạo và gán PixelFlowColorPalette.", MessageType.Warning);
-            return;
-        }
-
-        for (int i = 0; i < colorPalette.entries.Count; i += 3)
-        {
-            EditorGUILayout.BeginHorizontal();
-
-            for (int j = i; j < Mathf.Min(i + 3, colorPalette.entries.Count); j++)
-            {
-                PaletteEntry entry = colorPalette.entries[j];
-
-                if (entry == null)
-                    continue;
-
-                Color previousColor = GUI.backgroundColor;
-                GUI.backgroundColor = entry.color;
-
-                string label = selectedColor == j ? "> " + entry.displayName : entry.displayName;
-
-                if (GUILayout.Button(label, GUILayout.Height(28)))
-                {
-                    selectedColor = j;
-                    placeIndestructiblePrefab = false;
-                }
-
-                GUI.backgroundColor = previousColor;
-            }
-
-            EditorGUILayout.EndHorizontal();
-        }
-
-        EditorGUILayout.Space(8);
-    }
-
-
-
+    // -------------------- GRID --------------------
 
     private void DrawGrid()
     {
-        EditorGUILayout.LabelField($"Grid: {levelData.width} x {levelData.height}", EditorStyles.boldLabel);
+        EditorGUILayout.Space(6);
+
+        EditorGUILayout.LabelField(
+            $"Grid: {levelData.width} x {levelData.height}",
+            EditorStyles.boldLabel
+        );
+
+        EditorGUILayout.LabelField(
+            "Ctrl + lăn chuột: zoom grid",
+            EditorStyles.miniLabel
+        );
 
         Event e = Event.current;
 
         paintControlId = GUIUtility.GetControlID(FocusType.Passive);
 
-        gridScroll = EditorGUILayout.BeginScrollView(gridScroll, GUILayout.MinHeight(300f), GUILayout.ExpandHeight(true));
+        gridScroll = EditorGUILayout.BeginScrollView(
+            gridScroll,
+            GUILayout.MinHeight(300f),
+            GUILayout.ExpandHeight(true)
+        );
 
         for (int y = levelData.height - 1; y >= 0; y--)
         {
@@ -278,9 +551,14 @@ public class LevelEditor : EditorWindow
             {
                 Vector2Int position = new Vector2Int(x, y);
 
-                bool hasBlock = blockLookup.TryGetValue(position, out PixelBlockData block);
+                bool hasBlock = blockLookup.TryGetValue(
+                    position,
+                    out PixelBlockData block
+                );
 
-                Color cellColor = hasBlock ? GetBlockColor(block) : new Color(0.25f, 0.25f, 0.25f);
+                Color cellColor = hasBlock
+                    ? GetBlockColor(block)
+                    : new Color(0.25f, 0.25f, 0.25f);
 
                 if (hasBlock && block.customPrefab != null)
                 {
@@ -294,17 +572,24 @@ public class LevelEditor : EditorWindow
                     GUILayout.Height(cellButtonSize)
                 );
 
-
                 int centerX = (levelData.width - 1) / 2;
                 int centerY = (levelData.height - 1) / 2;
 
-                bool isCenterColumn = x == centerX || (levelData.width % 2 == 0 && x == centerX + 1);
+                bool isCenterColumn =
+                    x == centerX ||
+                    (levelData.width % 2 == 0 && x == centerX + 1);
 
-                bool isCenterRow = y == centerY || (levelData.height % 2 == 0 && y == centerY + 1);
+                bool isCenterRow =
+                    y == centerY ||
+                    (levelData.height % 2 == 0 && y == centerY + 1);
 
                 if (isCenterColumn || isCenterRow)
                 {
-                    cellColor = Color.Lerp(cellColor, new Color(1f, 0.8f, 0.1f), 0.35f);
+                    cellColor = Color.Lerp(
+                        cellColor,
+                        new Color(1f, 0.8f, 0.1f),
+                        0.25f
+                    );
                 }
 
                 if (isCenterColumn && isCenterRow)
@@ -312,35 +597,52 @@ public class LevelEditor : EditorWindow
                     cellColor = new Color(1f, 0.65f, 0.05f);
                 }
 
-
                 EditorGUI.DrawRect(rect, cellColor);
 
                 if (hasBlock)
                 {
-                    string label = block.isIndestructible ? "∞" : block.hitPoints.ToString();
+                    string label = block.isIndestructible
+                        ? "∞"
+                        : block.hitPoints.ToString();
 
-                    GUI.Label(rect, label, EditorStyles.centeredGreyMiniLabel);
+                    GUI.Label(
+                        rect,
+                        label,
+                        EditorStyles.centeredGreyMiniLabel
+                    );
                 }
 
                 // Ctrl + cuộn chuột để zoom grid.
-                if (e.type == EventType.ScrollWheel && e.control && rect.Contains(e.mousePosition))
+                if (e.type == EventType.ScrollWheel &&
+                    e.control &&
+                    rect.Contains(e.mousePosition))
                 {
                     float factor = e.delta.y > 0f ? 0.9f : 1.1f;
 
-                    cellButtonSize = Mathf.Clamp(cellButtonSize * factor, MinCellButtonSize, MaxCellButtonSize);
+                    cellButtonSize = Mathf.Clamp(
+                        cellButtonSize * factor,
+                        MinCellButtonSize,
+                        MaxCellButtonSize
+                    );
 
                     e.Use();
                     Repaint();
                     GUIUtility.ExitGUI();
                 }
 
-                // Chuột trái vẽ, chuột phải xóa.
-                if (e.type == EventType.MouseDown && rect.Contains(e.mousePosition) && (e.button == 0 || e.button == 1))
+                if (e.type == EventType.MouseDown &&
+                    rect.Contains(e.mousePosition) &&
+                    (e.button == 0 || e.button == 1))
                 {
                     Undo.IncrementCurrentGroup();
+
                     paintUndoGroup = Undo.GetCurrentGroup();
 
-                    Undo.SetCurrentGroupName(e.button == 0 ? "Paint Pixel Flow Level" : "Erase Pixel Flow Level");
+                    Undo.SetCurrentGroupName(
+                        e.button == 0
+                            ? "Paint Pixel Flow Level"
+                            : "Erase Pixel Flow Level"
+                    );
 
                     isMousePainting = e.button == 0;
                     isMouseErasing = e.button == 1;
@@ -350,6 +652,7 @@ public class LevelEditor : EditorWindow
                     PaintCell(position, isMouseErasing);
 
                     lastPaintedPosition = position;
+
                     e.Use();
                 }
                 else if (e.type == EventType.MouseDrag &&
@@ -360,6 +663,7 @@ public class LevelEditor : EditorWindow
                     PaintCell(position, isMouseErasing);
 
                     lastPaintedPosition = position;
+
                     e.Use();
                 }
             }
@@ -369,16 +673,43 @@ public class LevelEditor : EditorWindow
 
         EditorGUILayout.EndScrollView();
 
-        if (e.type == EventType.MouseDrag && (isMousePainting || isMouseErasing))
+        if (e.type == EventType.MouseDrag &&
+            (isMousePainting || isMouseErasing))
         {
             Repaint();
         }
     }
 
+    private void HandleMouseRelease()
+    {
+        Event e = Event.current;
+
+        if (e.type != EventType.MouseUp ||
+            (!isMousePainting && !isMouseErasing))
+        {
+            return;
+        }
+
+        Undo.CollapseUndoOperations(paintUndoGroup);
+
+        isMousePainting = false;
+        isMouseErasing = false;
+
+        lastPaintedPosition = new Vector2Int(-1, -1);
+
+        if (GUIUtility.hotControl == paintControlId)
+        {
+            GUIUtility.hotControl = 0;
+        }
+
+        e.Use();
+    }
+
+    // -------------------- PAINT / ERASE --------------------
 
     private void PaintCell(Vector2Int position, bool erase)
     {
-        if (levelData == null)
+        if (levelData == null || !IsInsideGrid(position))
             return;
 
         if (erase)
@@ -389,7 +720,7 @@ public class LevelEditor : EditorWindow
             Undo.RecordObject(levelData, "Erase Pixel Flow Block");
 
             levelData.blocks.RemoveAll(
-                block => block.position == position
+                block => block != null && block.position == position
             );
         }
         else if (placeIndestructiblePrefab)
@@ -402,7 +733,8 @@ public class LevelEditor : EditorWindow
                 return;
             }
 
-            GameObject prefab = colorPalette.indestructiblePrefabs[selectedPrefabIndex];
+            GameObject prefab =
+                colorPalette.indestructiblePrefabs[selectedPrefabIndex];
 
             if (prefab == null)
             {
@@ -412,15 +744,11 @@ public class LevelEditor : EditorWindow
 
             Undo.RecordObject(levelData, "Place Indestructible Block");
 
-            PixelBlockData existing = blockLookup.ContainsKey(position) ? blockLookup[position] : null;
-
-            if (existing != null)
+            if (blockLookup.TryGetValue(position, out PixelBlockData existing))
             {
                 existing.customPrefab = prefab;
-
                 existing.colorId = string.Empty;
                 existing.color = Color.white;
-
                 existing.isIndestructible = true;
                 existing.hitPoints = 0;
             }
@@ -439,8 +767,13 @@ public class LevelEditor : EditorWindow
         }
         else
         {
-            if (colorPalette == null || colorPalette.entries == null || selectedColor < 0 || selectedColor >= colorPalette.entries.Count)
+            if (colorPalette == null ||
+                colorPalette.entries == null ||
+                selectedColor < 0 ||
+                selectedColor >= colorPalette.entries.Count)
+            {
                 return;
+            }
 
             PaletteEntry entry = colorPalette.entries[selectedColor];
 
@@ -449,14 +782,11 @@ public class LevelEditor : EditorWindow
 
             Undo.RecordObject(levelData, "Paint Pixel Flow Block");
 
-            if (blockLookup.TryGetValue(
-                position,
-                out PixelBlockData existing))
+            if (blockLookup.TryGetValue(position, out PixelBlockData existing))
             {
                 existing.colorId = entry.id;
                 existing.color = entry.color;
                 existing.hitPoints = hitPoints;
-
                 existing.customPrefab = null;
                 existing.isIndestructible = isIndestructible;
             }
@@ -482,29 +812,191 @@ public class LevelEditor : EditorWindow
         SceneView.RepaintAll();
     }
 
+    // -------------------- COLOR PALETTE --------------------
+
+    private void DrawPalette()
+    {
+        EditorGUILayout.Space(6);
+
+        EditorGUILayout.LabelField(
+            "Color Palette",
+            EditorStyles.boldLabel
+        );
+
+        if (colorPalette == null || colorPalette.entries == null)
+        {
+            EditorGUILayout.HelpBox(
+                "Hãy tạo và gán ColorPalette asset.",
+                MessageType.Warning
+            );
+            return;
+        }
+
+        for (int i = 0; i < colorPalette.entries.Count; i += 3)
+        {
+            EditorGUILayout.BeginHorizontal();
+
+            for (int j = i; j < Mathf.Min(i + 3, colorPalette.entries.Count); j++)
+            {
+                PaletteEntry entry = colorPalette.entries[j];
+
+                if (entry == null)
+                    continue;
+
+                Color previousBackground = GUI.backgroundColor;
+
+                GUI.backgroundColor = entry.color;
+
+                string label = selectedColor == j
+                    ? "> " + entry.displayName
+                    : entry.displayName;
+
+                if (GUILayout.Button(label, GUILayout.Height(28)))
+                {
+                    selectedColor = j;
+                    placeIndestructiblePrefab = false;
+                }
+
+                GUI.backgroundColor = previousBackground;
+            }
+
+            EditorGUILayout.EndHorizontal();
+        }
+    }
+
+    // -------------------- PREFAB PALETTE --------------------
+
+    private void DrawPrefabPalette()
+    {
+        EditorGUILayout.Space(6);
+
+        EditorGUILayout.LabelField(
+            "Indestructible Prefabs",
+            EditorStyles.boldLabel
+        );
+
+        if (colorPalette == null ||
+            colorPalette.indestructiblePrefabs == null ||
+            colorPalette.indestructiblePrefabs.Count == 0)
+        {
+            EditorGUILayout.HelpBox(
+                "Thêm prefab vào Indestructible Prefabs trong ColorPalette.",
+                MessageType.Info
+            );
+            return;
+        }
+
+        List<GameObject> prefabs =
+            colorPalette.indestructiblePrefabs;
+
+        List<string> names = new List<string>();
+
+        foreach (GameObject prefab in prefabs)
+        {
+            names.Add(
+                prefab != null
+                    ? prefab.name
+                    : "(Missing Prefab)"
+            );
+        }
+
+        selectedPrefabIndex = Mathf.Clamp(
+            selectedPrefabIndex,
+            0,
+            prefabs.Count - 1
+        );
+
+        selectedPrefabIndex = EditorGUILayout.Popup(
+            "Selected Prefab",
+            selectedPrefabIndex,
+            names.ToArray()
+        );
+
+        placeIndestructiblePrefab = EditorGUILayout.Toggle(
+            "Place Prefab Mode",
+            placeIndestructiblePrefab
+        );
+
+        if (placeIndestructiblePrefab)
+        {
+            EditorGUILayout.HelpBox(
+                "Chuột trái đặt prefab. Chuột phải xóa block.",
+                MessageType.None
+            );
+        }
+    }
+
+    // -------------------- SCENE PREVIEW SETTINGS --------------------
+
+    private void DrawPreviewSettings()
+    {
+        EditorGUILayout.Space(8);
+
+        EditorGUILayout.LabelField(
+            "3D Scene Preview",
+            EditorStyles.boldLabel
+        );
+
+        showScenePreview = EditorGUILayout.Toggle(
+            "Show Preview",
+            showScenePreview
+        );
+
+        using (new EditorGUI.DisabledScope(!showScenePreview))
+        {
+            showGrid = EditorGUILayout.Toggle(
+                "Show Grid",
+                showGrid
+            );
+
+            cellSpacing = Mathf.Max(
+                0.1f,
+                EditorGUILayout.FloatField("Cell Spacing", cellSpacing)
+            );
+
+            blockSize = Mathf.Clamp(
+                EditorGUILayout.FloatField("Block Size", blockSize),
+                0.01f,
+                cellSpacing
+            );
+
+            blockHeight = Mathf.Max(
+                0.01f,
+                EditorGUILayout.FloatField("Block Height", blockHeight)
+            );
+
+            previewOrigin = EditorGUILayout.Vector3Field(
+                "Preview Origin",
+                previewOrigin
+            );
+
+            if (GUILayout.Button("Frame Preview"))
+            {
+                FramePreview();
+            }
+        }
+
+        SceneView.RepaintAll();
+    }
+
+    // -------------------- SCENE VIEW DRAWING --------------------
+
     private void DrawScenePreview(SceneView sceneView)
     {
-        if (!showScenePreview || levelData == null)
+        if (!showScenePreview ||
+            levelData == null ||
+            levelData.blocks == null)
+        {
             return;
-
-        if (levelData.blocks == null)
-            return;
+        }
 
         DrawGridLines();
         DrawCenterMarker();
 
         foreach (PixelBlockData block in levelData.blocks)
         {
-            if (block == null)
+            if (block == null || !IsInsideGrid(block.position))
                 continue;
-
-            if (block.position.x < 0 ||
-                block.position.x >= levelData.width ||
-                block.position.y < 0 ||
-                block.position.y >= levelData.height)
-            {
-                continue;
-            }
 
             Vector3 position = GridToWorld(block.position);
 
@@ -520,52 +1012,94 @@ public class LevelEditor : EditorWindow
                 EventType.Repaint
             );
 
-            // Small HP label above the block.
-            GUIStyle labelStyle = new GUIStyle(
-                EditorStyles.boldLabel
-            );
+            GUIStyle labelStyle = new GUIStyle(EditorStyles.boldLabel);
 
             labelStyle.normal.textColor = Color.white;
             labelStyle.alignment = TextAnchor.MiddleCenter;
 
-            string blockLabel = block.isIndestructible ? "∞" : block.hitPoints.ToString();
+            string label = block.isIndestructible
+                ? "∞"
+                : block.hitPoints.ToString();
 
-            Handles.Label(position + Vector3.up * (blockHeight * 0.5f + 0.1f), blockLabel, labelStyle);
+            Handles.Label(
+                position + Vector3.up * (blockHeight * 0.5f + 0.1f),
+                label,
+                labelStyle
+            );
         }
     }
 
     private void DrawGridLines()
     {
-        if (!showGrid)
+        if (!showGrid || levelData == null)
             return;
 
         float width = levelData.width * cellSpacing;
         float depth = levelData.height * cellSpacing;
 
-        Vector3 bottomLeft = previewOrigin
-            + new Vector3(-width * 0.5f, 0.01f, -depth * 0.5f);
+        Vector3 bottomLeft = previewOrigin +
+            new Vector3(-width * 0.5f, 0.01f, -depth * 0.5f);
 
         Handles.color = new Color(0.5f, 0.5f, 0.5f, 0.5f);
 
         for (int x = 0; x <= levelData.width; x++)
         {
-            Vector3 start = bottomLeft
-                + Vector3.right * (x * cellSpacing);
+            Vector3 start = bottomLeft +
+                Vector3.right * (x * cellSpacing);
 
-            Vector3 end = start + Vector3.forward * depth;
-
-            Handles.DrawLine(start, end);
+            Handles.DrawLine(
+                start,
+                start + Vector3.forward * depth
+            );
         }
 
         for (int z = 0; z <= levelData.height; z++)
         {
-            Vector3 start = bottomLeft
-                + Vector3.forward * (z * cellSpacing);
+            Vector3 start = bottomLeft +
+                Vector3.forward * (z * cellSpacing);
 
-            Vector3 end = start + Vector3.right * width;
-
-            Handles.DrawLine(start, end);
+            Handles.DrawLine(
+                start,
+                start + Vector3.right * width
+            );
         }
+    }
+
+    private void DrawCenterMarker()
+    {
+        if (levelData == null)
+            return;
+
+        float width = levelData.width * cellSpacing;
+        float depth = levelData.height * cellSpacing;
+
+        Handles.color = Color.yellow;
+
+        Handles.DrawLine(
+            previewOrigin + Vector3.left * (width * 0.5f),
+            previewOrigin + Vector3.right * (width * 0.5f)
+        );
+
+        Handles.DrawLine(
+            previewOrigin + Vector3.back * (depth * 0.5f),
+            previewOrigin + Vector3.forward * (depth * 0.5f)
+        );
+
+        Handles.color = new Color(1f, 0.45f, 0f);
+
+        Handles.SphereHandleCap(
+            0,
+            previewOrigin + Vector3.up * 0.05f,
+            Quaternion.identity,
+            cellSpacing * 0.35f,
+            EventType.Repaint
+        );
+
+        Handles.Label(
+            previewOrigin + Vector3.up * 0.3f,
+            "CENTER",
+            EditorStyles.boldLabel
+        );
     }
 
     private Vector3 GridToWorld(Vector2Int position)
@@ -578,11 +1112,7 @@ public class LevelEditor : EditorWindow
             (position.y - (levelData.height - 1) * 0.5f)
             * cellSpacing;
 
-        return previewOrigin + new Vector3(
-            xOffset,
-            0f,
-            zOffset
-        );
+        return previewOrigin + new Vector3(xOffset, 0f, zOffset);
     }
 
     private void FramePreview()
@@ -593,7 +1123,9 @@ public class LevelEditor : EditorWindow
             return;
 
         sceneView.pivot = previewOrigin;
+
         sceneView.rotation = Quaternion.Euler(35f, 45f, 0f);
+
         sceneView.size = Mathf.Max(
             levelData.width,
             levelData.height
@@ -602,6 +1134,8 @@ public class LevelEditor : EditorWindow
         sceneView.orthographic = true;
         sceneView.Repaint();
     }
+
+    // -------------------- LOOKUP / COLOR --------------------
 
     private void RebuildLookup()
     {
@@ -618,6 +1152,25 @@ public class LevelEditor : EditorWindow
             blockLookup[block.position] = block;
         }
     }
+
+    private Color GetBlockColor(PixelBlockData block)
+    {
+        if (block == null)
+            return Color.white;
+
+        if (colorPalette != null &&
+            !string.IsNullOrEmpty(block.colorId) &&
+            colorPalette.TryGetColor(
+                block.colorId,
+                out Color paletteColor))
+        {
+            return paletteColor;
+        }
+
+        return block.color;
+    }
+
+    // -------------------- CREATE / SAVE / CLEAR --------------------
 
     private void CreateNewLevel()
     {
@@ -643,6 +1196,7 @@ public class LevelEditor : EditorWindow
         previousLevelData = newLevel;
 
         RebuildLookup();
+
         EditorUtility.SetDirty(newLevel);
 
         Repaint();
@@ -654,93 +1208,37 @@ public class LevelEditor : EditorWindow
         if (levelData == null)
             return;
 
+        if (CountOutOfBoundsBlocks() > 0)
+        {
+            bool saveAnyway = EditorUtility.DisplayDialog(
+                "Blocks Outside Board",
+                "Có block nằm ngoài biên. Vẫn lưu level?",
+                "Lưu",
+                "Hủy"
+            );
+
+            if (!saveAnyway)
+                return;
+        }
+
         EditorUtility.SetDirty(levelData);
         AssetDatabase.SaveAssets();
 
         Debug.Log($"Saved level: {levelData.name}");
     }
 
-    private Color GetBlockColor(PixelBlockData block)
-    {
-        if (colorPalette != null &&
-            !string.IsNullOrEmpty(block.colorId) &&
-            colorPalette.TryGetColor(block.colorId, out Color paletteColor))
-        {
-            return paletteColor;
-        }
-
-        // Fallback cho level cũ hoặc ID màu không còn tồn tại.
-        return block.color;
-    }
-
-
-    private void DrawPrefabPalette()
-    {
-        EditorGUILayout.LabelField("Indestructible Prefabs", EditorStyles.boldLabel);
-
-        if (colorPalette == null || colorPalette.indestructiblePrefabs == null || colorPalette.indestructiblePrefabs.Count == 0)
-        {
-            EditorGUILayout.HelpBox(
-                "Hãy thêm prefab vào mục Indestructible Block Prefabs " +
-                "trong Color Palette asset.",
-                MessageType.Info
-            );
-            return;
-        }
-
-        List<GameObject> prefabs = colorPalette.indestructiblePrefabs;
-
-        List<string> names = new List<string>();
-
-        foreach (GameObject prefab in prefabs)
-        {
-            names.Add(prefab != null ? prefab.name : "(Missing Prefab)");
-        }
-
-        selectedPrefabIndex = Mathf.Clamp(selectedPrefabIndex, 0, prefabs.Count - 1);
-
-        selectedPrefabIndex = EditorGUILayout.Popup("Selected Prefab", selectedPrefabIndex, names.ToArray());
-
-        placeIndestructiblePrefab = EditorGUILayout.Toggle("Place Prefab Mode", placeIndestructiblePrefab );
-
-        if (placeIndestructiblePrefab)
-        {
-            EditorGUILayout.HelpBox("Chuột trái để đặt prefab. Chuột phải để xóa block.", MessageType.None);
-        }
-    }
-
-    private void HandleGridZoom()
-    {
-        Event e = Event.current;
-
-        if (e.type != EventType.ScrollWheel || !e.control)
-        {
-            return;
-        }
-
-        // Chỉ zoom khi con trỏ nằm trong vùng grid.
-        Rect gridRect = GUILayoutUtility.GetLastRect();
-
-        if (!gridRect.Contains(e.mousePosition))
-            return;
-
-        float zoomFactor = e.delta.y > 0f ? 0.9f : 1.1f;
-
-        cellButtonSize = Mathf.Clamp(cellButtonSize * zoomFactor, MinCellButtonSize, MaxCellButtonSize);
-
-        e.Use();
-        Repaint();
-    }
-
     private void ClearLevel()
     {
-        if (levelData == null || levelData.blocks == null || levelData.blocks.Count == 0)
+        if (levelData == null ||
+            levelData.blocks == null ||
+            levelData.blocks.Count == 0)
         {
             return;
         }
 
-        bool confirm = EditorUtility.DisplayDialog("Clear Level",
-            "có chắc muốn xóa toàn bộ block trong level này không?",
+        bool confirm = EditorUtility.DisplayDialog(
+            "Clear Level",
+            "Xóa toàn bộ block trong level này?",
             "Xóa toàn bộ",
             "Hủy"
         );
@@ -759,36 +1257,4 @@ public class LevelEditor : EditorWindow
         Repaint();
         SceneView.RepaintAll();
     }
-
-    private void DrawCenterMarker()
-    {
-        if (levelData == null)
-            return;
-
-        float width = levelData.width * cellSpacing;
-        float depth = levelData.height * cellSpacing;
-
-        Vector3 center = previewOrigin;
-
-        Handles.color = Color.yellow;
-
-        // Trục giữa theo chiều ngang.
-        Handles.DrawLine(center + Vector3.left * (width * 0.5f), center + Vector3.right * (width * 0.5f));
-
-        // Trục giữa theo chiều sâu.
-        Handles.DrawLine(center + Vector3.back * (depth * 0.5f), center + Vector3.forward * (depth * 0.5f));
-
-        // Điểm tâm.
-        Handles.color = new Color(1f, 0.45f, 0f);
-        Handles.SphereHandleCap(
-            0,
-            center + Vector3.up * 0.05f,
-            Quaternion.identity,
-            cellSpacing * 0.35f,
-            EventType.Repaint
-        );
-
-        Handles.Label(center + Vector3.up * 0.3f, "CENTER", EditorStyles.boldLabel);
-    }
-
 }
