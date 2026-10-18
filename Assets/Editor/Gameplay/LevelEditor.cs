@@ -74,7 +74,6 @@ public class LevelEditor : EditorWindow
     private bool showScenePreview = true;
     private bool showGrid = true;
 
-    private float cellSpacing = 1.1f;
     private float blockSize = 1f;
     private float blockHeight = 1f;
 
@@ -214,6 +213,7 @@ public class LevelEditor : EditorWindow
 
         levelData.width = Mathf.Clamp(levelData.width, 1, MaxGridDimension);
         levelData.height = Mathf.Clamp(levelData.height, 1, MaxGridDimension);
+        levelData.cellSpacing = Mathf.Max(0.1f, levelData.cellSpacing);
     }
 
     // -------------------- BOARD SETTINGS --------------------
@@ -928,47 +928,39 @@ public class LevelEditor : EditorWindow
 
     // -------------------- SCENE PREVIEW SETTINGS --------------------
 
+
     private void DrawPreviewSettings()
     {
         EditorGUILayout.Space(8);
 
-        EditorGUILayout.LabelField(
-            "3D Scene Preview",
-            EditorStyles.boldLabel
-        );
+        EditorGUILayout.LabelField("3D Scene Preview", EditorStyles.boldLabel);
 
-        showScenePreview = EditorGUILayout.Toggle(
-            "Show Preview",
-            showScenePreview
-        );
+        showScenePreview = EditorGUILayout.Toggle("Show Preview", showScenePreview);
 
         using (new EditorGUI.DisabledScope(!showScenePreview))
         {
-            showGrid = EditorGUILayout.Toggle(
-                "Show Grid",
-                showGrid
-            );
+            showGrid = EditorGUILayout.Toggle("Show Grid", showGrid);
 
-            cellSpacing = Mathf.Max(
-                0.1f,
-                EditorGUILayout.FloatField("Cell Spacing", cellSpacing)
-            );
+            // Cell Spacing dùng chung với LevelData và runtime.
+            EditorGUI.BeginChangeCheck();
 
-            blockSize = Mathf.Clamp(
-                EditorGUILayout.FloatField("Block Size", blockSize),
-                0.01f,
-                cellSpacing
-            );
+            float newCellSpacing = EditorGUILayout.FloatField("Cell Spacing", levelData.cellSpacing);
 
-            blockHeight = Mathf.Max(
-                0.01f,
-                EditorGUILayout.FloatField("Block Height", blockHeight)
-            );
+            if (EditorGUI.EndChangeCheck())
+            {
+                Undo.RecordObject(levelData, "Change Board Cell Spacing");
 
-            previewOrigin = EditorGUILayout.Vector3Field(
-                "Preview Origin",
-                previewOrigin
-            );
+                levelData.cellSpacing = Mathf.Max(0.1f, newCellSpacing);
+
+                EditorUtility.SetDirty(levelData);
+            }
+
+            // Block Size không vượt quá khoảng cách giữa các ô.
+            blockSize = Mathf.Clamp(EditorGUILayout.FloatField("Block Size", blockSize), 0.01f, levelData.cellSpacing);
+
+            blockHeight = Mathf.Max(0.01f, EditorGUILayout.FloatField("Block Height", blockHeight));
+
+            previewOrigin = EditorGUILayout.Vector3Field("Preview Origin", previewOrigin);
 
             if (GUILayout.Button("Frame Preview"))
             {
@@ -976,8 +968,10 @@ public class LevelEditor : EditorWindow
             }
         }
 
+        Repaint();
         SceneView.RepaintAll();
     }
+
 
     // -------------------- SCENE VIEW DRAWING --------------------
 
@@ -1034,8 +1028,8 @@ public class LevelEditor : EditorWindow
         if (!showGrid || levelData == null)
             return;
 
-        float width = levelData.width * cellSpacing;
-        float depth = levelData.height * cellSpacing;
+        float width = levelData.width * levelData.cellSpacing;
+        float depth = levelData.height * levelData.cellSpacing;
 
         Vector3 bottomLeft = previewOrigin +
             new Vector3(-width * 0.5f, 0.01f, -depth * 0.5f);
@@ -1045,7 +1039,7 @@ public class LevelEditor : EditorWindow
         for (int x = 0; x <= levelData.width; x++)
         {
             Vector3 start = bottomLeft +
-                Vector3.right * (x * cellSpacing);
+                Vector3.right * (x * levelData.cellSpacing);
 
             Handles.DrawLine(
                 start,
@@ -1056,7 +1050,7 @@ public class LevelEditor : EditorWindow
         for (int z = 0; z <= levelData.height; z++)
         {
             Vector3 start = bottomLeft +
-                Vector3.forward * (z * cellSpacing);
+                Vector3.forward * (z * levelData.cellSpacing);
 
             Handles.DrawLine(
                 start,
@@ -1070,8 +1064,8 @@ public class LevelEditor : EditorWindow
         if (levelData == null)
             return;
 
-        float width = levelData.width * cellSpacing;
-        float depth = levelData.height * cellSpacing;
+        float width = levelData.width * levelData.cellSpacing;
+        float depth = levelData.height * levelData.cellSpacing;
 
         Handles.color = Color.yellow;
 
@@ -1091,7 +1085,7 @@ public class LevelEditor : EditorWindow
             0,
             previewOrigin + Vector3.up * 0.05f,
             Quaternion.identity,
-            cellSpacing * 0.35f,
+            levelData.cellSpacing * 0.35f,
             EventType.Repaint
         );
 
@@ -1104,13 +1098,11 @@ public class LevelEditor : EditorWindow
 
     private Vector3 GridToWorld(Vector2Int position)
     {
-        float xOffset =
-            (position.x - (levelData.width - 1) * 0.5f)
-            * cellSpacing;
+        float spacing = levelData.cellSpacing;
 
-        float zOffset =
-            (position.y - (levelData.height - 1) * 0.5f)
-            * cellSpacing;
+        float xOffset = (position.x - (levelData.width - 1) * 0.5f) * spacing;
+
+        float zOffset = (position.y - (levelData.height - 1) * 0.5f) * spacing;
 
         return previewOrigin + new Vector3(xOffset, 0f, zOffset);
     }
@@ -1129,7 +1121,7 @@ public class LevelEditor : EditorWindow
         sceneView.size = Mathf.Max(
             levelData.width,
             levelData.height
-        ) * cellSpacing * 0.8f;
+        ) * levelData.cellSpacing * 0.8f;
 
         sceneView.orthographic = true;
         sceneView.Repaint();

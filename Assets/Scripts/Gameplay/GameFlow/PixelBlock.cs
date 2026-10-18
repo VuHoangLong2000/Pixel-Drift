@@ -21,7 +21,6 @@ public class PixelBlock : MonoBehaviour
         }
 
         _manager = manager;
-
         ColorId = data.colorId;
         HitPoints = Mathf.Max(1, data.hitPoints);
         IsIndestructible = data.isIndestructible;
@@ -32,14 +31,26 @@ public class PixelBlock : MonoBehaviour
 
         foreach (Renderer targetRenderer in _renderers)
         {
-            if (targetRenderer == null)
-                continue;
+            if (targetRenderer == null) continue;
 
-            // Không sửa trực tiếp sharedMaterial của asset.
+            // Tạo material instance riêng, tránh sửa sharedMaterial.
             targetRenderer.material.color = data.color;
         }
 
         gameObject.name = $"PixelBlock_{GridPosition.x}_{GridPosition.y}";
+    }
+
+    public bool TryTakeDamage(int damage = 1)
+    {
+        if (IsDestroyed || IsIndestructible || damage <= 0)
+            return false;
+
+        HitPoints = Mathf.Max(0, HitPoints - damage);
+
+        if (HitPoints <= 0)
+            return TryDestroy();
+
+        return true;
     }
 
     public bool TryDestroy()

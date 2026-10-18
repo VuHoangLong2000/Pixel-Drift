@@ -363,4 +363,17 @@ MonoBehaviour:
     hitPoints: 1
     isIndestructible: 0
     customPrefab: {fileID: 0}
-  shooters: []
+  shooters:
+  - quantity: 1
+    ammo: 20
+    colorId: red
+    spawnOrder: 0
+  - quantity: 3
+    ammo: 10
+    colorId: red
+    spawnOrder: 1
+  - quantity: 2
+    ammo: 10
+    colorId: blue
+    spawnOrder: 2
+  cellSpacing: 1.1

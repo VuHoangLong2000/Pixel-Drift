@@ -24,5 +24,9 @@ public class LevelData : ScriptableObject
 
     [Header("Shooter Spawn")]
     public List<ShooterSpawnData> shooters = new List<ShooterSpawnData>();
+
+    [Header("Board Layout")]
+    [Min(0.1f)]
+    public float cellSpacing = 1.1f;
 }
  

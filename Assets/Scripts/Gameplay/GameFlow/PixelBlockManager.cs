@@ -14,10 +14,10 @@ public class PixelBlockManager : MonoBehaviour
     [Tooltip("Prefab mặc định nếu block không có customPrefab.")]
     [SerializeField] private GameObject blockPrefab;
 
-    [SerializeField, Min(0f)] private float blockSpacing = 0.05f;
-
+    [Tooltip("Kích thước thực tế của mỗi block.")]
     [SerializeField, Min(0.1f)] private float cellSize = 1f;
 
+    [Tooltip("Tâm của board trong World Space.")]
     [SerializeField] private Vector3 boardOrigin = Vector3.zero;
 
     [Tooltip("Chỉ chứa các block được tạo bởi PixelBlockManager.")]
@@ -30,6 +30,12 @@ public class PixelBlockManager : MonoBehaviour
 
     public LevelData CurrentLevelData { get; private set; }
     public int CurrentLevelIndex { get; private set; } = -1;
+
+    // Các property dùng chung cho ConveyorPath và hệ thống khác.
+    public Vector3 BoardOrigin => boardOrigin;
+    public float CellSize => cellSize;
+
+    public float CellSpacing => CurrentLevelData != null ? Mathf.Max(0.1f, CurrentLevelData.cellSpacing) : 1.1f;
 
     public event Action OnLevelLoaded;
 
@@ -49,14 +55,18 @@ public class PixelBlockManager : MonoBehaviour
         LevelData levelData = levelDatabase.GetLevel(levelIndex);
 
         if (levelData == null)
+        {
+            Debug.LogError($"[PixelBlockManager] Level index {levelIndex} was not found.", this);
             return false;
+        }
 
-        BuildLevel(levelData);
-
+        // Gán Level trước để GridToWorld dùng đúng dữ liệu mới.
         CurrentLevelData = levelData;
         CurrentLevelIndex = levelIndex;
 
-        Debug.Log($"[PixelBlockManager] Loaded Level {levelIndex + 1}: " + $"{_blocks.Count} blocks.", this);
+        BuildLevel(levelData);
+
+        Debug.Log($"[PixelBlockManager] Loaded Level {levelIndex + 1}: {_blocks.Count} blocks.", this);
 
         OnLevelLoaded?.Invoke();
 
@@ -72,6 +82,10 @@ public class PixelBlockManager : MonoBehaviour
         }
 
         ClearBlocks();
+        CurrentLevelData = levelData;
+
+        if (levelData.blocks == null)
+            return;
 
         foreach (PixelBlockData data in levelData.blocks)
         {
@@ -80,11 +94,12 @@ public class PixelBlockManager : MonoBehaviour
 
             GameObject prefab = data.customPrefab != null ? data.customPrefab : blockPrefab;
 
+            Vector3 worldPosition = GridToWorld(data.position);
             GameObject instance;
 
             if (prefab != null)
             {
-                instance = Instantiate(prefab, GridToWorld(data.position), Quaternion.identity, blockRoot);
+                instance = Instantiate(prefab, worldPosition, Quaternion.identity, blockRoot);
             }
             else
             {
@@ -93,7 +108,7 @@ public class PixelBlockManager : MonoBehaviour
                 if (blockRoot != null)
                     instance.transform.SetParent(blockRoot, true);
 
-                instance.transform.position = GridToWorld(data.position);
+                instance.transform.position = worldPosition;
             }
 
             instance.transform.localScale = Vector3.one * cellSize;
@@ -108,15 +123,24 @@ public class PixelBlockManager : MonoBehaviour
             pixelBlock.Initialize(data, this);
             _blocks.Add(pixelBlock);
         }
-
-        CurrentLevelData = levelData;
     }
 
-    private Vector3 GridToWorld(Vector2Int position)
+    /// <summary>
+    /// Chuyển tọa độ ô thành World Position.
+    /// Board được căn giữa quanh BoardOrigin.
+    /// </summary>
+    public Vector3 GridToWorld(Vector2Int position)
     {
-        float step = cellSize + blockSpacing;
+        if (CurrentLevelData == null)
+            return boardOrigin;
 
-        return boardOrigin + new Vector3(position.x * step, 0f, position.y * step);
+        float spacing = CellSpacing;
+
+        float xOffset = (position.x - (CurrentLevelData.width - 1) * 0.5f) * spacing;
+
+        float zOffset = (position.y - (CurrentLevelData.height - 1) * 0.5f) * spacing;
+
+        return boardOrigin + new Vector3(xOffset, 0f, zOffset);
     }
 
     public PixelBlock FindFirstMatchingBlock(Vector3 origin, Vector3 direction, string colorId, float maxDistance, float alignmentTolerance = 0.1f)
@@ -144,14 +168,12 @@ public class PixelBlockManager : MonoBehaviour
                 continue;
 
             Vector3 toBlock = block.transform.position - origin;
-
             float distanceAlongRay = Vector3.Dot(toBlock, direction);
 
             if (distanceAlongRay < 0f || distanceAlongRay > maxDistance)
                 continue;
 
             Vector3 closestPoint = origin + direction * distanceAlongRay;
-
             float lateralDistance = Vector3.Distance(closestPoint, block.transform.position);
 
             if (lateralDistance > alignmentTolerance)
@@ -176,8 +198,14 @@ public class PixelBlockManager : MonoBehaviour
     {
         foreach (GameObject spawnedObject in _spawnedObjects)
         {
-            if (spawnedObject != null)
+            if (spawnedObject == null)
+                continue;
+
+            // Hỗ trợ cả runtime lẫn Editor khi component chạy ExecuteAlways.
+            if (Application.isPlaying)
                 Destroy(spawnedObject);
+            else
+                DestroyImmediate(spawnedObject);
         }
 
         _spawnedObjects.Clear();
