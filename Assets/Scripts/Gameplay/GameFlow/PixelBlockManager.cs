@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -143,10 +144,10 @@ public class PixelBlockManager : MonoBehaviour
         return boardOrigin + new Vector3(xOffset, 0f, zOffset);
     }
 
-    public PixelBlock FindFirstMatchingBlock(Vector3 origin, Vector3 direction, string colorId, float maxDistance, float alignmentTolerance = 0.1f)
+
+    public PixelBlock FindFirstBlock(Vector3 origin, Vector3 direction, float maxDistance, float alignmentTolerance = 0.1f)
     {
-        if (string.IsNullOrWhiteSpace(colorId))
-            return null;
+        direction.y = 0f;
 
         if (direction.sqrMagnitude < 0.0001f)
             return null;
@@ -158,25 +159,23 @@ public class PixelBlockManager : MonoBehaviour
 
         foreach (PixelBlock block in _blocks)
         {
-            if (block == null || block.IsDestroyed)
+            if (block == null || block.IsDestroyed || !block.isActiveAndEnabled)
                 continue;
 
-            if (block.IsIndestructible)
-                continue;
-
-            if (block.ColorId != colorId)
-                continue;
-
+            // Block bất hoại vẫn chắn đường bắn.
             Vector3 toBlock = block.transform.position - origin;
+            toBlock.y = 0f;
+
             float distanceAlongRay = Vector3.Dot(toBlock, direction);
 
             if (distanceAlongRay < 0f || distanceAlongRay > maxDistance)
                 continue;
 
             Vector3 closestPoint = origin + direction * distanceAlongRay;
-            float lateralDistance = Vector3.Distance(closestPoint, block.transform.position);
+            Vector3 lateralOffset = block.transform.position - closestPoint;
+            lateralOffset.y = 0f;
 
-            if (lateralDistance > alignmentTolerance)
+            if (lateralOffset.magnitude > alignmentTolerance)
                 continue;
 
             if (distanceAlongRay < nearestDistance)
@@ -188,6 +187,7 @@ public class PixelBlockManager : MonoBehaviour
 
         return nearestBlock;
     }
+
 
     public void UnregisterBlock(PixelBlock block)
     {
@@ -201,7 +201,11 @@ public class PixelBlockManager : MonoBehaviour
             if (spawnedObject == null)
                 continue;
 
-            // Hỗ trợ cả runtime lẫn Editor khi component chạy ExecuteAlways.
+            PixelBlock block = spawnedObject.GetComponent<PixelBlock>();
+
+            if (block != null)
+                block.Invalidate();
+
             if (Application.isPlaying)
                 Destroy(spawnedObject);
             else

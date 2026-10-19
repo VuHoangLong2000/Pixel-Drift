@@ -22,6 +22,18 @@ MonoBehaviour:
     m_Localized: "B\u1EAFt \u0111\u1EA7u"
     m_Metadata:
       m_Items: []
+  - m_Id: 993195273043968
+    m_Localized: "C\xE0i \u0111\u1EB7t"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 993195335958528
+    m_Localized: "M\xE0n {0}"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 993195335958529
+    m_Localized: "Nh\u1EA1c / \xE2m thanh"
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

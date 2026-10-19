@@ -19,6 +19,18 @@ MonoBehaviour:
     m_Key: btn_start
     m_Metadata:
       m_Items: []
+  - m_Id: 993195273043968
+    m_Key: btn_setting
+    m_Metadata:
+      m_Items: []
+  - m_Id: 993195335958528
+    m_Key: text_level
+    m_Metadata:
+      m_Items: []
+  - m_Id: 993195335958529
+    m_Key: text_soundandmusic
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

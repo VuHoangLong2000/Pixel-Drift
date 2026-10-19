@@ -33,10 +33,21 @@ public class SaveManager : MonoBehaviour
 
     public void Load()
     {
+        _cache.Clear();
+
         _container = _provider.Load();
+
+        if (_container == null)
+            _container = new SaveContainer();
+
+        if (_container.entries == null)
+            _container.entries = new List<SaveEntry>();
 
         foreach (var entry in _container.entries)
         {
+            if (entry == null || string.IsNullOrEmpty(entry.key))
+                continue;
+
             _cache[entry.key] = entry.json;
         }
     }

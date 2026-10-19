@@ -1,0 +1,907 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b1cf93e48513294f96b1a7356b306e1, type: 3}
+  m_Name: Level_002
+  m_EditorClassIdentifier: Assembly-CSharp::LevelData
+  width: 12
+  height: 12
+  blocks:
+  - position: {x: 0, y: 11}
+    color: {r: 0.9, g: 0.2, b: 0.2, a: 1}
+    colorId: red
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 0, y: 10}
+    color: {r: 0.9, g: 0.2, b: 0.2, a: 1}
+    colorId: red
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 0, y: 9}
+    color: {r: 0.9, g: 0.2, b: 0.2, a: 1}
+    colorId: red
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 0, y: 8}
+    color: {r: 0.9, g: 0.2, b: 0.2, a: 1}
+    colorId: red
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 0, y: 7}
+    color: {r: 0.9, g: 0.2, b: 0.2, a: 1}
+    colorId: red
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 0, y: 6}
+    color: {r: 0.9, g: 0.2, b: 0.2, a: 1}
+    colorId: red
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 0, y: 5}
+    color: {r: 0.9, g: 0.2, b: 0.2, a: 1}
+    colorId: red
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 0, y: 4}
+    color: {r: 0.9, g: 0.2, b: 0.2, a: 1}
+    colorId: red
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 0, y: 3}
+    color: {r: 0.9, g: 0.2, b: 0.2, a: 1}
+    colorId: red
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 0, y: 2}
+    color: {r: 0.9, g: 0.2, b: 0.2, a: 1}
+    colorId: red
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 0, y: 1}
+    color: {r: 0.9, g: 0.2, b: 0.2, a: 1}
+    colorId: red
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 0, y: 0}
+    color: {r: 0.9, g: 0.2, b: 0.2, a: 1}
+    colorId: red
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 1, y: 0}
+    color: {r: 0.9, g: 0.2, b: 0.2, a: 1}
+    colorId: red
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 2, y: 0}
+    color: {r: 0.9, g: 0.2, b: 0.2, a: 1}
+    colorId: red
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 3, y: 0}
+    color: {r: 0.9, g: 0.2, b: 0.2, a: 1}
+    colorId: red
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 4, y: 0}
+    color: {r: 0.9, g: 0.2, b: 0.2, a: 1}
+    colorId: red
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 5, y: 0}
+    color: {r: 0.9, g: 0.2, b: 0.2, a: 1}
+    colorId: red
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 6, y: 0}
+    color: {r: 0.9, g: 0.2, b: 0.2, a: 1}
+    colorId: red
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 7, y: 0}
+    color: {r: 0.9, g: 0.2, b: 0.2, a: 1}
+    colorId: red
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 8, y: 0}
+    color: {r: 0.9, g: 0.2, b: 0.2, a: 1}
+    colorId: red
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 9, y: 0}
+    color: {r: 0.9, g: 0.2, b: 0.2, a: 1}
+    colorId: red
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 10, y: 0}
+    color: {r: 0.9, g: 0.2, b: 0.2, a: 1}
+    colorId: red
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 11, y: 0}
+    color: {r: 0.9, g: 0.2, b: 0.2, a: 1}
+    colorId: red
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 11, y: 1}
+    color: {r: 0.9, g: 0.2, b: 0.2, a: 1}
+    colorId: red
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 11, y: 2}
+    color: {r: 0.9, g: 0.2, b: 0.2, a: 1}
+    colorId: red
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 11, y: 3}
+    color: {r: 0.9, g: 0.2, b: 0.2, a: 1}
+    colorId: red
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 11, y: 4}
+    color: {r: 0.9, g: 0.2, b: 0.2, a: 1}
+    colorId: red
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 11, y: 5}
+    color: {r: 0.9, g: 0.2, b: 0.2, a: 1}
+    colorId: red
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 11, y: 6}
+    color: {r: 0.9, g: 0.2, b: 0.2, a: 1}
+    colorId: red
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 11, y: 7}
+    color: {r: 0.9, g: 0.2, b: 0.2, a: 1}
+    colorId: red
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 11, y: 8}
+    color: {r: 0.9, g: 0.2, b: 0.2, a: 1}
+    colorId: red
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 11, y: 9}
+    color: {r: 0.9, g: 0.2, b: 0.2, a: 1}
+    colorId: red
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 11, y: 10}
+    color: {r: 0.9, g: 0.2, b: 0.2, a: 1}
+    colorId: red
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 11, y: 11}
+    color: {r: 0.9, g: 0.2, b: 0.2, a: 1}
+    colorId: red
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 10, y: 11}
+    color: {r: 0.9, g: 0.2, b: 0.2, a: 1}
+    colorId: red
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 9, y: 11}
+    color: {r: 0.9, g: 0.2, b: 0.2, a: 1}
+    colorId: red
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 8, y: 11}
+    color: {r: 0.9, g: 0.2, b: 0.2, a: 1}
+    colorId: red
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 7, y: 11}
+    color: {r: 0.9, g: 0.2, b: 0.2, a: 1}
+    colorId: red
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 6, y: 11}
+    color: {r: 0.9, g: 0.2, b: 0.2, a: 1}
+    colorId: red
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 5, y: 11}
+    color: {r: 0.9, g: 0.2, b: 0.2, a: 1}
+    colorId: red
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 4, y: 11}
+    color: {r: 0.9, g: 0.2, b: 0.2, a: 1}
+    colorId: red
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 3, y: 11}
+    color: {r: 0.9, g: 0.2, b: 0.2, a: 1}
+    colorId: red
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 2, y: 11}
+    color: {r: 0.9, g: 0.2, b: 0.2, a: 1}
+    colorId: red
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 1, y: 11}
+    color: {r: 0.9, g: 0.2, b: 0.2, a: 1}
+    colorId: red
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 2, y: 9}
+    color: {r: 0.9, g: 0.2, b: 0.2, a: 1}
+    colorId: red
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 2, y: 8}
+    color: {r: 0.9, g: 0.2, b: 0.2, a: 1}
+    colorId: red
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 2, y: 7}
+    color: {r: 0.9, g: 0.2, b: 0.2, a: 1}
+    colorId: red
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 2, y: 6}
+    color: {r: 0.9, g: 0.2, b: 0.2, a: 1}
+    colorId: red
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 2, y: 5}
+    color: {r: 0.9, g: 0.2, b: 0.2, a: 1}
+    colorId: red
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 2, y: 4}
+    color: {r: 0.9, g: 0.2, b: 0.2, a: 1}
+    colorId: red
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 2, y: 3}
+    color: {r: 0.9, g: 0.2, b: 0.2, a: 1}
+    colorId: red
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 2, y: 2}
+    color: {r: 0.9, g: 0.2, b: 0.2, a: 1}
+    colorId: red
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 3, y: 2}
+    color: {r: 0.9, g: 0.2, b: 0.2, a: 1}
+    colorId: red
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 4, y: 2}
+    color: {r: 0.9, g: 0.2, b: 0.2, a: 1}
+    colorId: red
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 5, y: 2}
+    color: {r: 0.9, g: 0.2, b: 0.2, a: 1}
+    colorId: red
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 6, y: 2}
+    color: {r: 0.9, g: 0.2, b: 0.2, a: 1}
+    colorId: red
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 7, y: 2}
+    color: {r: 0.9, g: 0.2, b: 0.2, a: 1}
+    colorId: red
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 8, y: 2}
+    color: {r: 0.9, g: 0.2, b: 0.2, a: 1}
+    colorId: red
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 9, y: 2}
+    color: {r: 0.9, g: 0.2, b: 0.2, a: 1}
+    colorId: red
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 9, y: 3}
+    color: {r: 0.9, g: 0.2, b: 0.2, a: 1}
+    colorId: red
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 9, y: 4}
+    color: {r: 0.9, g: 0.2, b: 0.2, a: 1}
+    colorId: red
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 9, y: 5}
+    color: {r: 0.9, g: 0.2, b: 0.2, a: 1}
+    colorId: red
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 9, y: 6}
+    color: {r: 0.9, g: 0.2, b: 0.2, a: 1}
+    colorId: red
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 9, y: 7}
+    color: {r: 0.9, g: 0.2, b: 0.2, a: 1}
+    colorId: red
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 9, y: 8}
+    color: {r: 0.9, g: 0.2, b: 0.2, a: 1}
+    colorId: red
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 9, y: 9}
+    color: {r: 0.9, g: 0.2, b: 0.2, a: 1}
+    colorId: red
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 8, y: 9}
+    color: {r: 0.9, g: 0.2, b: 0.2, a: 1}
+    colorId: red
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 7, y: 9}
+    color: {r: 0.9, g: 0.2, b: 0.2, a: 1}
+    colorId: red
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 6, y: 9}
+    color: {r: 0.9, g: 0.2, b: 0.2, a: 1}
+    colorId: red
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 5, y: 9}
+    color: {r: 0.9, g: 0.2, b: 0.2, a: 1}
+    colorId: red
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 4, y: 9}
+    color: {r: 0.9, g: 0.2, b: 0.2, a: 1}
+    colorId: red
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 3, y: 9}
+    color: {r: 0.9, g: 0.2, b: 0.2, a: 1}
+    colorId: red
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 4, y: 7}
+    color: {r: 0.9, g: 0.2, b: 0.2, a: 1}
+    colorId: red
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 4, y: 6}
+    color: {r: 0.9, g: 0.2, b: 0.2, a: 1}
+    colorId: red
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 4, y: 5}
+    color: {r: 0.9, g: 0.2, b: 0.2, a: 1}
+    colorId: red
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 4, y: 4}
+    color: {r: 0.9, g: 0.2, b: 0.2, a: 1}
+    colorId: red
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 5, y: 4}
+    color: {r: 0.9, g: 0.2, b: 0.2, a: 1}
+    colorId: red
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 6, y: 4}
+    color: {r: 0.9, g: 0.2, b: 0.2, a: 1}
+    colorId: red
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 7, y: 4}
+    color: {r: 0.9, g: 0.2, b: 0.2, a: 1}
+    colorId: red
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 7, y: 5}
+    color: {r: 0.9, g: 0.2, b: 0.2, a: 1}
+    colorId: red
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 7, y: 6}
+    color: {r: 0.9, g: 0.2, b: 0.2, a: 1}
+    colorId: red
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 7, y: 7}
+    color: {r: 0.9, g: 0.2, b: 0.2, a: 1}
+    colorId: red
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 6, y: 7}
+    color: {r: 0.9, g: 0.2, b: 0.2, a: 1}
+    colorId: red
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 5, y: 7}
+    color: {r: 0.9, g: 0.2, b: 0.2, a: 1}
+    colorId: red
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 1, y: 10}
+    color: {r: 0.2, g: 0.45, b: 0.95, a: 1}
+    colorId: blue
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 1, y: 9}
+    color: {r: 0.2, g: 0.45, b: 0.95, a: 1}
+    colorId: blue
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 1, y: 8}
+    color: {r: 0.2, g: 0.45, b: 0.95, a: 1}
+    colorId: blue
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 1, y: 7}
+    color: {r: 0.2, g: 0.45, b: 0.95, a: 1}
+    colorId: blue
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 1, y: 6}
+    color: {r: 0.2, g: 0.45, b: 0.95, a: 1}
+    colorId: blue
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 1, y: 5}
+    color: {r: 0.2, g: 0.45, b: 0.95, a: 1}
+    colorId: blue
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 1, y: 4}
+    color: {r: 0.2, g: 0.45, b: 0.95, a: 1}
+    colorId: blue
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 1, y: 3}
+    color: {r: 0.2, g: 0.45, b: 0.95, a: 1}
+    colorId: blue
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 1, y: 2}
+    color: {r: 0.2, g: 0.45, b: 0.95, a: 1}
+    colorId: blue
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 1, y: 1}
+    color: {r: 0.2, g: 0.45, b: 0.95, a: 1}
+    colorId: blue
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 2, y: 1}
+    color: {r: 0.2, g: 0.45, b: 0.95, a: 1}
+    colorId: blue
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 3, y: 1}
+    color: {r: 0.2, g: 0.45, b: 0.95, a: 1}
+    colorId: blue
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 4, y: 1}
+    color: {r: 0.2, g: 0.45, b: 0.95, a: 1}
+    colorId: blue
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 5, y: 1}
+    color: {r: 0.2, g: 0.45, b: 0.95, a: 1}
+    colorId: blue
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 6, y: 1}
+    color: {r: 0.2, g: 0.45, b: 0.95, a: 1}
+    colorId: blue
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 7, y: 1}
+    color: {r: 0.2, g: 0.45, b: 0.95, a: 1}
+    colorId: blue
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 8, y: 1}
+    color: {r: 0.2, g: 0.45, b: 0.95, a: 1}
+    colorId: blue
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 9, y: 1}
+    color: {r: 0.2, g: 0.45, b: 0.95, a: 1}
+    colorId: blue
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 10, y: 1}
+    color: {r: 0.2, g: 0.45, b: 0.95, a: 1}
+    colorId: blue
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 10, y: 2}
+    color: {r: 0.2, g: 0.45, b: 0.95, a: 1}
+    colorId: blue
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 10, y: 3}
+    color: {r: 0.2, g: 0.45, b: 0.95, a: 1}
+    colorId: blue
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 10, y: 4}
+    color: {r: 0.2, g: 0.45, b: 0.95, a: 1}
+    colorId: blue
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 10, y: 5}
+    color: {r: 0.2, g: 0.45, b: 0.95, a: 1}
+    colorId: blue
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 10, y: 6}
+    color: {r: 0.2, g: 0.45, b: 0.95, a: 1}
+    colorId: blue
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 10, y: 7}
+    color: {r: 0.2, g: 0.45, b: 0.95, a: 1}
+    colorId: blue
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 10, y: 8}
+    color: {r: 0.2, g: 0.45, b: 0.95, a: 1}
+    colorId: blue
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 10, y: 9}
+    color: {r: 0.2, g: 0.45, b: 0.95, a: 1}
+    colorId: blue
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 10, y: 10}
+    color: {r: 0.2, g: 0.45, b: 0.95, a: 1}
+    colorId: blue
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 9, y: 10}
+    color: {r: 0.2, g: 0.45, b: 0.95, a: 1}
+    colorId: blue
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 8, y: 10}
+    color: {r: 0.2, g: 0.45, b: 0.95, a: 1}
+    colorId: blue
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 7, y: 10}
+    color: {r: 0.2, g: 0.45, b: 0.95, a: 1}
+    colorId: blue
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 6, y: 10}
+    color: {r: 0.2, g: 0.45, b: 0.95, a: 1}
+    colorId: blue
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 5, y: 10}
+    color: {r: 0.2, g: 0.45, b: 0.95, a: 1}
+    colorId: blue
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 4, y: 10}
+    color: {r: 0.2, g: 0.45, b: 0.95, a: 1}
+    colorId: blue
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 3, y: 10}
+    color: {r: 0.2, g: 0.45, b: 0.95, a: 1}
+    colorId: blue
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 2, y: 10}
+    color: {r: 0.2, g: 0.45, b: 0.95, a: 1}
+    colorId: blue
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 3, y: 8}
+    color: {r: 0.2, g: 0.75, b: 0.35, a: 1}
+    colorId: green
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 3, y: 7}
+    color: {r: 0.2, g: 0.75, b: 0.35, a: 1}
+    colorId: green
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 3, y: 6}
+    color: {r: 0.2, g: 0.75, b: 0.35, a: 1}
+    colorId: green
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 3, y: 5}
+    color: {r: 0.2, g: 0.75, b: 0.35, a: 1}
+    colorId: green
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 3, y: 4}
+    color: {r: 0.2, g: 0.75, b: 0.35, a: 1}
+    colorId: green
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 3, y: 3}
+    color: {r: 0.2, g: 0.75, b: 0.35, a: 1}
+    colorId: green
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 4, y: 3}
+    color: {r: 0.2, g: 0.75, b: 0.35, a: 1}
+    colorId: green
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 5, y: 3}
+    color: {r: 0.2, g: 0.75, b: 0.35, a: 1}
+    colorId: green
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 6, y: 3}
+    color: {r: 0.2, g: 0.75, b: 0.35, a: 1}
+    colorId: green
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 7, y: 3}
+    color: {r: 0.2, g: 0.75, b: 0.35, a: 1}
+    colorId: green
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 8, y: 3}
+    color: {r: 0.2, g: 0.75, b: 0.35, a: 1}
+    colorId: green
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 8, y: 4}
+    color: {r: 0.2, g: 0.75, b: 0.35, a: 1}
+    colorId: green
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 8, y: 5}
+    color: {r: 0.2, g: 0.75, b: 0.35, a: 1}
+    colorId: green
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 8, y: 6}
+    color: {r: 0.2, g: 0.75, b: 0.35, a: 1}
+    colorId: green
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 8, y: 7}
+    color: {r: 0.2, g: 0.75, b: 0.35, a: 1}
+    colorId: green
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 8, y: 8}
+    color: {r: 0.2, g: 0.75, b: 0.35, a: 1}
+    colorId: green
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 7, y: 8}
+    color: {r: 0.2, g: 0.75, b: 0.35, a: 1}
+    colorId: green
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 6, y: 8}
+    color: {r: 0.2, g: 0.75, b: 0.35, a: 1}
+    colorId: green
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 5, y: 8}
+    color: {r: 0.2, g: 0.75, b: 0.35, a: 1}
+    colorId: green
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 4, y: 8}
+    color: {r: 0.2, g: 0.75, b: 0.35, a: 1}
+    colorId: green
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 5, y: 6}
+    color: {r: 0.2, g: 0.75, b: 0.35, a: 1}
+    colorId: green
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 5, y: 5}
+    color: {r: 0.2, g: 0.75, b: 0.35, a: 1}
+    colorId: green
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 6, y: 5}
+    color: {r: 0.2, g: 0.75, b: 0.35, a: 1}
+    colorId: green
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  - position: {x: 6, y: 6}
+    color: {r: 0.2, g: 0.75, b: 0.35, a: 1}
+    colorId: green
+    hitPoints: 1
+    isIndestructible: 0
+    customPrefab: {fileID: 0}
+  shooters:
+  - quantity: 1
+    ammo: 30
+    colorId: blue
+    spawnOrder: 0
+  - quantity: 1
+    ammo: 30
+    colorId: green
+    spawnOrder: 1
+  - quantity: 1
+    ammo: 20
+    colorId: red
+    spawnOrder: 2
+  - quantity: 1
+    ammo: 10
+    colorId: blue
+    spawnOrder: 3
+  - quantity: 2
+    ammo: 30
+    colorId: red
+    spawnOrder: 4
+  - quantity: 1
+    ammo: 10
+    colorId: red
+    spawnOrder: 5
+  cellSpacing: 1.1

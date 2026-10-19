@@ -1,4 +1,3 @@
-
 using UnityEditor;
 using UnityEngine;
 
@@ -14,9 +13,7 @@ public class LevelShooterGeneratorWindow : EditorWindow
 
     private void OnGUI()
     {
-        EditorGUILayout.LabelField(
-            "Level Shooter Generator",
-            EditorStyles.boldLabel);
+        EditorGUILayout.LabelField("Level Shooter Generator", EditorStyles.boldLabel);
 
         EditorGUILayout.HelpBox(
             "Generate Shooter configurations from each level's " +
@@ -24,19 +21,14 @@ public class LevelShooterGeneratorWindow : EditorWindow
             "be replaced for the levels you generate.",
             MessageType.Info);
 
-        database = (LevelDatabaseSO)EditorGUILayout.ObjectField(
-            "Level Database",
-            database,
-            typeof(LevelDatabaseSO),
-            false);
+        database = (LevelDatabaseSO)EditorGUILayout.ObjectField("Level Database", database, typeof(LevelDatabaseSO), false);
 
         if (database == null)
             return;
 
         EditorGUILayout.Space();
 
-        EditorGUILayout.LabelField(
-            $"Total levels: {database.LevelCount}");
+        EditorGUILayout.LabelField($"Total levels: {database.LevelCount}");
 
         if (GUILayout.Button("Generate All Levels"))
         {
@@ -52,9 +44,7 @@ public class LevelShooterGeneratorWindow : EditorWindow
 
         EditorGUILayout.Space();
 
-        EditorGUILayout.LabelField(
-            "Generate individual level",
-            EditorStyles.boldLabel);
+        EditorGUILayout.LabelField("Generate individual level", EditorStyles.boldLabel);
 
         for (int i = 0; i < database.LevelCount; i++)
         {
@@ -65,8 +55,7 @@ public class LevelShooterGeneratorWindow : EditorWindow
 
             EditorGUILayout.BeginHorizontal();
 
-            EditorGUILayout.LabelField(
-                $"Level {i + 1}: {level.name}");
+            EditorGUILayout.LabelField($"Level {i + 1}: {level.name}");
 
             if (GUILayout.Button("Generate", GUILayout.Width(100)))
                 GenerateOne(level);
@@ -90,14 +79,9 @@ public class LevelShooterGeneratorWindow : EditorWindow
 
         AssetDatabase.SaveAssets();
 
-        Debug.Log(
-            $"[ShooterGenerator] Generated Shooter data for " +
-            $"{generatedCount} levels.");
+        Debug.Log($"[ShooterGenerator] Generated Shooter data for " + $"{generatedCount} levels.");
 
-        EditorUtility.DisplayDialog(
-            "Generation complete",
-            $"Generated Shooter data for {generatedCount} levels.",
-            "OK");
+        EditorUtility.DisplayDialog("Generation complete", $"Generated Shooter data for {generatedCount} levels.", "OK");
     }
 
     private void GenerateOne(LevelData level, bool saveAssets = true)
@@ -114,9 +98,6 @@ public class LevelShooterGeneratorWindow : EditorWindow
         if (saveAssets)
             AssetDatabase.SaveAssets();
 
-        Debug.Log(
-            $"[ShooterGenerator] {level.name}: " +
-            $"{level.shooters.Count} Shooter groups generated.",
-            level);
+        Debug.Log($"[ShooterGenerator] {level.name}: " + $"{level.shooters.Count} Shooter groups generated.", level);
     }
 }

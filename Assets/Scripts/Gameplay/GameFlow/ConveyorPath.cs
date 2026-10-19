@@ -32,6 +32,8 @@ public class ConveyorPath : MonoBehaviour
     public bool IsValid => _isValid;
     public int PointCount => _points == null ? 0 : _points.Length;
 
+    public Vector3 StartPosition => IsValid ? _points[0] : transform.position;
+
     private void OnEnable()
     {
         SubscribeToLevelEvents();
@@ -40,7 +42,6 @@ public class ConveyorPath : MonoBehaviour
 
     private void Start()
     {
-        // Phòng trường hợp Level được load trước khi component khởi tạo.
         RefreshPath();
     }
 
@@ -157,54 +158,63 @@ public class ConveyorPath : MonoBehaviour
     /// </summary>
     public Vector3 GetPositionAtDistance(float distance)
     {
-        if (!_isValid)
-            RefreshPath();
-
-        if (!_isValid)
+        if (!IsValid)
             return transform.position;
 
-        distance = Mathf.Repeat(distance, _pathLength);
+        // Không wrap về đầu đường khi đi hết một vòng.
+        distance = Mathf.Clamp(distance, 0f, _pathLength);
+
+        // Trả chính xác về điểm đầu/cuối tại hai biên.
+        if (distance <= 0f)
+            return _points[0];
+
+        if (distance >= _pathLength)
+            return _points[0];
 
         int segmentIndex = FindSegmentIndex(distance);
 
+        float segmentStart = _cumulativeDistances[segmentIndex];
+        float segmentEnd = _cumulativeDistances[segmentIndex + 1];
+
+        float segmentLength = segmentEnd - segmentStart;
+        float t = segmentLength > Mathf.Epsilon ? (distance - segmentStart) / segmentLength : 0f;
+
         Vector3 start = _points[segmentIndex];
         Vector3 end = _points[(segmentIndex + 1) % _points.Length];
-
-        float segmentStartDistance = _cumulativeDistances[segmentIndex];
-
-        float segmentLength = _cumulativeDistances[segmentIndex + 1] - segmentStartDistance;
-
-        float t = (distance - segmentStartDistance) / segmentLength;
 
         return Vector3.Lerp(start, end, t);
     }
 
     public Vector3 GetDirectionAtDistance(float distance)
     {
-        if (!_isValid)
-            RefreshPath();
+        if (!IsValid)
+            return Vector3.forward;
 
-        if (!_isValid)
-            return transform.forward;
+        distance = Mathf.Clamp(distance, 0f, _pathLength);
 
-        distance = Mathf.Repeat(distance, _pathLength);
+        // Cuối vòng: hướng theo đoạn cuối cùng, không quay hướng về đầu.
+        if (distance >= _pathLength)
+        {
+            Vector3 lastDirection = _points[0] - _points[_points.Length - 1];
+
+            return lastDirection.sqrMagnitude > Mathf.Epsilon ? lastDirection.normalized : Vector3.forward;
+        }
 
         int segmentIndex = FindSegmentIndex(distance);
 
         Vector3 direction = _points[(segmentIndex + 1) % _points.Length] - _points[segmentIndex];
 
-        return direction.sqrMagnitude > 0.0001f ? direction.normalized : transform.forward;
+        return direction.sqrMagnitude > Mathf.Epsilon ? direction.normalized : Vector3.forward;
     }
 
     public Quaternion GetRotationAtDistance(float distance)
     {
         Vector3 direction = GetDirectionAtDistance(distance);
-        direction.y = 0f;
 
-        if (direction.sqrMagnitude <= 0.0001f)
-            return transform.rotation;
+        if (direction.sqrMagnitude <= Mathf.Epsilon)
+            return Quaternion.identity;
 
-        return Quaternion.LookRotation(direction.normalized, Vector3.up);
+        return Quaternion.LookRotation(direction, Vector3.up);
     }
 
     private int FindSegmentIndex(float distance)
@@ -217,7 +227,6 @@ public class ConveyorPath : MonoBehaviour
 
         return _points.Length - 1;
     }
-
     private void OnDrawGizmos()
     {
         if (!showPath)
@@ -239,5 +248,15 @@ public class ConveyorPath : MonoBehaviour
             Gizmos.DrawLine(start, end);
             Gizmos.DrawSphere(start, gizmoPointRadius);
         }
+    }
+    public Vector3 GetPathPoint(int index)
+    {
+        if (!IsValid || _points == null || _points.Length == 0)
+            return transform.position;
+
+        if (index < 0 || index >= _points.Length)
+            return transform.position;
+
+        return _points[index];
     }
 }

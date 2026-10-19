@@ -22,6 +22,18 @@ MonoBehaviour:
     m_Localized: Start
     m_Metadata:
       m_Items: []
+  - m_Id: 993195273043968
+    m_Localized: Settings
+    m_Metadata:
+      m_Items: []
+  - m_Id: 993195335958528
+    m_Localized: Level {0}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 993195335958529
+    m_Localized: Sound / Music
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []
